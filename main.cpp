@@ -1,97 +1,63 @@
-// Wyszukiwanie cyklu Eulera
-// Data: 19.03.2014
-// (C)2014 mgr Jerzy Wa³aszek
-//---------------------------
-
 #include <iostream>
 #include <fstream>
 #include <cstdlib>
+#include <string>
 
 using namespace std;
 
-// Zmienne globalne
+const int MAX_N = 100; // maksymalna iloœæ wierzcho³ków w grafie
+int GraphArray[MAX_N][MAX_N]; // macierz s¹siedztwa
 
-int n,m,sptr;
-int ** A;                       // Macierz s¹siedztwa
-int * S;                        // Stos w tablicy
+int ReadData(int A[][MAX_N]); //funkcja wczytuj¹ca graf z pliku
 
-// Procedura wyszukuje cykl Eulera
-// We:
-// v - wierzcho³ek startowy
-//--------------------------------
-void DFSEuler(int v)
-{
-  int i;
-
-  for(i = 0; i < n; i++)          // Przegl¹damy s¹siadów
-    while(A[v][i])
-    {
-      A[v][i]--;                  // Usuwamy krawêdŸ
-      A[i][v]--;
-      DFSEuler(i);                // Rekurencja
-    }
-  S[sptr++] = v;                  // Wierzcho³ek v umieszczamy na stosie
+int main(){
+    ReadData(GraphArray);
+    system("PAUSE");
+    return 1;
 }
 
-// **********************
-// *** Program g³ówny ***
-// **********************
+int ReadData(int A[][MAX_N]){
+    int i,j,k,wmax,n,x,y;
+    fstream plik;
+    plik.open("data.txt", ios::in);
+    string linia, val1, val2;
 
-int main()
-{
-  int i,j,v1,v2;
+    for(i = 0; i < MAX_N; i++)
+    for(j = 0; j < MAX_N; j++) A[i][j] = 0;
+    wmax = 0;
+    getline(plik,linia);
+    n = atoi(linia.c_str());//cin >> n; // odczytujemy iloœæ krawêdzi
+    for(i = 0; i < n; i++){
+        //cin >> x >> y; // odczytujemy krawêdŸ
+        getline(plik,linia);
+        k=0;
+        while(linia[k] != ' '){
+            val1[k] = linia[k];
+            k++;
+        }
+        x = atoi(val1.c_str());
+        val1=' ';
 
-  fstream data;
-  data.open("data.txt",ios::in);
+        j=0;
+        k++;
+        while(linia[k] != '\0'){
+            val2[j] = linia[k];
+            k++;
+            j++;
+        }
+        y = atoi(val2.c_str());
+        val2=' ';
 
-  if(data.good()==false)
-  {
-      cout<<"Nie znaleziono pliku data";
-      exit(0);
-  }
-
-  data >> n >> m;                // Czytamy liczbê wierzcho³ków i krawêdzi
-
-  A = new int * [n];            // Tworzymy tablicê wskaŸników
-  S = new int [m + 1];          // Tworzymy stos
-  sptr = 0;
-
-  for(i = 0; i < n; i++)
-    A[i] = new int [n];         // Tworzymy wiersze macierzy s¹siedztwa
-
-  // Macierz wype³niamy zerami
-
-  for(i = 0; i < n; i++)
-    for(j = 0; j < n; j++) A[i][j] = 0;
-
-  // Odczytujemy kolejne definicje krawêdzi
-
-  for(i = 0; i < m; i++)
-  {
-    data >> v1 >> v2;    // wierzcho³ki koñcowe krawêdzi
-    A[v1][v2]++;        // KrawêdŸ v1->v2 obecna
-    A[v2][v1]++;        // KrawêdŸ v2->v1 obecna
-  }
-
-  cout << endl;
-
-  // Wyznaczamy cykl Eulera
-
-  DFSEuler(0);
-
-  // Wypisujemy zawartoœæ stosu
-
-  cout << "EULERIAN CYCLE : ";
-
-  for(i = 0; i < sptr; i++) cout << S[i] << " ";
-  cout << endl;
-
-  // Usuwamy tablice dynamiczne
-
-  for(i = 0; i < n; i++) delete [] A[i];
-
-  delete [] A;
-  delete [] S;
-
-  return 0;
+        wmax = (x > wmax) ? x : wmax;
+        wmax = (y > wmax) ? y : wmax;
+        A[x-1][y-1] = 1;
+        A[y-1][x-1] = 1;
+    }
+    cout << endl;
+    for(i = 0; i < wmax; i++) {
+        for(j = 0; j < wmax; j++) {
+            cout << (int)A[i][j] << " ";
+        }
+    cout << endl;
+    }
 }
